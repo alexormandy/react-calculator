@@ -12,41 +12,30 @@ class Container extends Component {
     display: 0
   };
 
-  vars = {
-    value: null,
-    input: 0,
-    operator: null,
-    inputArray: [],
-    display: 0
-  };
-
   digitHandler = val => {
-    if (!isNaN(val) || val === ",") {
-      this.vars.inputArray.push(val);
-      console.log(`inputArray: ${this.vars.inputArray}`);
-      let tempInput = this.vars.inputArray.join("");
-      this.vars.input = parseFloat(tempInput);
-      console.log(`input: ${this.vars.input}`);
-      this.setState({ display: this.vars.input });
+    let tempArray = this.state.inputArray;
+    if (!isNaN(val) || val === ".") {
+      tempArray.push(val);
+      this.setState({ inputArray: tempArray });
+      console.log(`inputArray: ${this.state.inputArray}`);
+      let tempValue = parseInt(this.state.inputArray.join(""));
+      this.setState({ input: tempValue, display: tempValue });
     } else {
-      if (this.vars.operator === null) {
-        if (val !== "=") {
-          this.vars.operator = val;
-          this.vars.value = this.vars.input;
-          this.vars.inputArray = [];
-          this.vars.input = 0;
-          console.log(`operator: ${this.vars.operator}`);
-        } else {
-          this.vars.operator = null;
-          this.vars.inputArray = [];
-          this.vars.input = 0;
-        }
+      if (this.state.operator === null) {
+        let tempOperator = val;
+        this.setState({
+          operator: tempOperator,
+          value: this.state.input,
+          inputArray: []
+        });
+        console.log(`operator: ${this.state.operator}`);
       } else {
-        if (this.vars.value !== 0) {
+        if (this.state.value > 0) {
           this.operatorHandler(val);
         } else {
-          this.vars.operator = val;
-          console.log(`operator: ${this.vars.operator}`);
+          let tempOperator = val;
+          this.setState({ operator: tempOperator });
+          console.log(`operator: ${this.state.operator}`);
         }
       }
     }
@@ -56,12 +45,11 @@ class Container extends Component {
     console.log("this is the switch");
     if (val === "AC") {
       this.clearDisplay();
-    } else if (val === "%") {
-      this.percentage();
-    } else if (val === "+/-") {
-      this.negateValue();
     } else {
-      switch (this.vars.operator) {
+      switch (this.state.operator) {
+        case "%":
+          this.percentage();
+          break;
         case "÷":
           this.division();
           break;
@@ -77,64 +65,55 @@ class Container extends Component {
         default:
           console.log("Error! that wasn't right...");
       }
-      this.vars.operator = val;
     }
+    this.setState({ operator: val });
   };
 
   addition = () => {
     console.log("this is addition");
-    this.vars.value += this.vars.input;
-    this.vars.inputArray = [];
-    this.setState({ display: this.vars.value });
+    let tempValue = this.state.value + this.state.input;
+    this.setState({ value: tempValue, inputArray: [], display: tempValue });
   };
 
   subtraction = () => {
-    this.vars.value -= this.vars.input;
-    this.vars.inputArray = [];
-    this.setState({ display: this.vars.value });
+    let tempValue = this.state.value - this.state.input;
+    this.setState({ value: tempValue, inputArray: [], display: tempValue });
   };
 
   multiplication = () => {
-    this.vars.value *= this.vars.input;
-    this.vars.inputArray = [];
-    this.setState({ display: this.vars.value });
+    let tempValue = this.state.value * this.state.input;
+    this.setState({ value: tempValue, inputArray: [], display: tempValue });
   };
   division = () => {
-    this.vars.value /= this.vars.input;
-    this.vars.inputArray = [];
-    this.setState({ display: this.vars.value });
+    let tempValue = this.state.value / this.state.input;
+    this.setState({ value: tempValue, inputArray: [], display: tempValue });
   };
   clearDisplay = () => {
-    this.vars.operator = null;
-    this.vars.value = 0;
-    this.vars.inputArray = [];
-    this.setState((state, props) => ({
-      display: this.vars.value
-    }));
+    this.setState({ operator: null, value: null, inputArray: [], display: 0 });
   };
 
+  equals = () => {};
+
   negateValue = () => {
-    this.vars.value = -1 * this.vars.value;
-    this.vars.inputArray = [];
-    this.setState({ display: this.vars.value });
+    let tempValue = -1 * this.state.value;
+    this.setState({ value: tempValue, inputArray: [], display: tempValue });
   };
 
   percentage = () => {
-    this.vars.value = this.vars.value / 100;
-    this.vars.inputArray = [];
-    this.vars.operator = null;
+    let tempValue = this.state.value / 100;
     this.setState({
-      display: this.vars.value
+      value: tempValue,
+      inputArray: [],
+      operator: null,
+      display: tempValue
     });
   };
 
   render() {
     return (
-      <div className="outer-container">
-        <div className="container">
-          <Display display={this.state.display} className="display" />
-          <Keyboard digitHandler={this.digitHandler} />
-        </div>
+      <div className="container">
+        <Display display={this.state.display} className="display" />
+        <Keyboard digitHandler={this.digitHandler} />
         <div className="createdBy">
           <h3>
             Created by <a href="https://github.com/alexormandy">Alex</a>
