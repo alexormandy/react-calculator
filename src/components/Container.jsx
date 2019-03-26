@@ -135,6 +135,11 @@ class Container extends Component {
           <Display display={this.state.display} className="display" />
           <Keyboard digitHandler={this.digitHandler} />
         </div>
+        <div className="createdBy">
+          <h3>
+            Created by <a href="https://github.com/alexormandy">Alex</a>
+          </h3>
+        </div>
       </div>
     );
   }
